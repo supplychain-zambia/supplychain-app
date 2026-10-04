@@ -25,14 +25,9 @@ Pilot scaffold: Muchinga province. TypeScript monorepo (React PWA, Netlify Funct
 `DATABASE_URL_DIRECT`, `BACKUP_PASSPHRASE`, `BACKUP_S3_KEY`, `BACKUP_S3_SECRET`, `BACKUP_S3_BUCKET`, `BACKUP_S3_ENDPOINT`.
 Set a lifecycle rule on the bucket for retention, and do a restore drill before real data arrives.
 
-## Load master data and the first admin
-1. `npm run migrate` (applies 002_auth.sql too)
-2. `npm run import:master -- facilities.csv products.csv` (columns: `code,name,level,parent_code` and `code,name,dispensing_unit`)
-3. `npm run create-user -- <email> <role> <orgUnitCode> <temporaryPassword>` (users change the password at first login; 5 failed logins lock the account for 15 minutes)
-
 ## Development tokens
-Real login exists now. For scripted staging tests only: `JWT_SECRET=... npx tsx scripts/dev-token.ts <userUuid> <role> <scopeOrgUnitUuid>`.
+Login is not built yet. For staging only: `JWT_SECRET=... npx tsx scripts/dev-token.ts <userUuid> <role> <scopeOrgUnitUuid>`.
 
 ## Not built yet
-Admin screens for users and CSV upload (use the scripts for now), MFA, password reset by email, balance and rollup views,
+Login and user management, facility capture UI with offline outbox, balance and rollup views,
 reporting calendar, transfers workflow, dashboards, exports, PWA service worker.

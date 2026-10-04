@@ -39,13 +39,3 @@ export const AuthClaims = z.object({
   scope: z.string().uuid(), // org unit the user may see (facility, district, province or national)
 });
 export type AuthClaims = z.infer<typeof AuthClaims>;
-
-const password = z.string().min(10, "Use at least 10 characters").max(200);
-export const LoginInput = z.object({ email: z.string().email(), password: z.string().min(1).max(200) });
-export const ChangePasswordInput = z.object({ oldPassword: z.string().min(1), newPassword: password });
-export const NewUserInput = z.object({
-  email: z.string().email(),
-  role: z.enum(ROLES),
-  orgUnitId: z.string().uuid(),
-  password, // temporary; the user must change it at first login
-});

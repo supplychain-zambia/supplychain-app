@@ -11,9 +11,7 @@
     "build": "npm -w apps/web run build",
     "typecheck": "tsc -p tsconfig.json && tsc -p apps/web/tsconfig.json",
     "test": "vitest run",
-    "migrate": "tsx db/migrate.ts",
-    "import:master": "tsx scripts/import-master.ts",
-    "create-user": "tsx scripts/create-user.ts"
+    "migrate": "tsx db/migrate.ts"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
