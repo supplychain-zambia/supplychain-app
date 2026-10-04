@@ -1,0 +1,29 @@
+name: Nightly database backup
+on:
+  schedule: [{ cron: "0 1 * * *" }] # 01:00 UTC
+  workflow_dispatch:
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      PG_MAJOR: "17" # set to your Neon Postgres major version
+    steps:
+      - name: Install matching pg_dump
+        run: |
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-$PG_MAJOR
+      - name: Dump and encrypt
+        env:
+          DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          FILE="scsp-$(date -u +%Y%m%dT%H%M%SZ).dump.enc"
+          /usr/lib/postgresql/$PG_MAJOR/bin/pg_dump "$DATABASE_URL_DIRECT" -Fc --no-owner \
+            | openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:BACKUP_PASSPHRASE > "$FILE"
+          echo "FILE=$FILE" >> "$GITHUB_ENV"
+      - name: Upload to S3-compatible bucket
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.BACKUP_S3_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_S3_SECRET }}
+          AWS_DEFAULT_REGION: auto
+        run: aws s3 cp "$FILE" "s3://${{ secrets.BACKUP_S3_BUCKET }}/$FILE" --endpoint-url "${{ secrets.BACKUP_S3_ENDPOINT }}"
